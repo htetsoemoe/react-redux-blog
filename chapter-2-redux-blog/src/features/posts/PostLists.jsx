@@ -4,7 +4,7 @@ import { selectAllPosts } from './postsSlice'
 
 const PostLists = () => {
     const posts = useSelector(selectAllPosts) // (state) => state.posts
-    console.log(posts);
+    // console.log(posts);
 
     const renderedPosts = posts.map((post) => (
         <article key={post.id}>
