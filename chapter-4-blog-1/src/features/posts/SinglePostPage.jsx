@@ -6,7 +6,7 @@ import PostAuthor from './PostAuthor'
 import TimeAgo from './TimeAgo'
 import ReactionButtons from './ReactionButtons'
 
-import { useParams } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 
 const SinglePostPage = () => {
     const { postId } = useParams()  // Returns an object of key/value pairs of the dynamic params from the current URL that were matched by the route path.
@@ -23,10 +23,13 @@ const SinglePostPage = () => {
     return (
         <article>
             <h2>{post.title}</h2>
-            <p>{post.title}</p>
+            <p>{post.body}</p>
             <p className="postCredit">
+                <Link to={`/post/edit/${post.id}`}>
+                    Edit Post
+                </Link>
                 <PostAuthor userId={post.userId} />
-                <TimeAgo post={post} />
+                <TimeAgo timestamp={post.date} />
             </p>
             <ReactionButtons post={post} />
         </article>
