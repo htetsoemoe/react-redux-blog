@@ -5,10 +5,12 @@ import './index.css'
 import { store } from './app/store.js'
 import { Provider } from 'react-redux'
 import { fetchUsers } from './features/users/usersSlice.js'
+import { fetchPosts } from './features/posts/postsSlice.js'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 
-// we need to fetch all users from api when application start
+// we need to fetch all users and all posts from api when application start
 store.dispatch(fetchUsers());
+store.dispatch(fetchPosts());
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
