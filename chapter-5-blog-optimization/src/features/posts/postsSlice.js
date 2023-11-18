@@ -1,4 +1,4 @@
-import { createAsyncThunk, createSlice, nanoid } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice, createSelector } from "@reduxjs/toolkit";
 import { sub } from 'date-fns';
 import axios from 'axios';
 
@@ -7,7 +7,8 @@ const POSTS_URL = 'https://jsonplaceholder.typicode.com/posts';
 const initialState = {
     posts: [],
     status: 'idle', // 'idle' | 'loading' | 'succeeded' | 'failed'
-    error: null
+    error: null,
+    count: 0
 }
 
 export const fetchPosts = createAsyncThunk('posts/fetchPosts', async () => {
@@ -48,37 +49,15 @@ const postSlice = createSlice({
     name: 'posts',
     initialState,
     reducers: {
-        postAdded: {
-            reducer(state, action) {
-                state.posts.push(action.payload)
-            },
-            prepare(title, content, userId) {
-                return {
-                    payload: {
-                        id: nanoid(),
-                        title,
-                        content,
-                        date: new Date().toISOString(),
-                        userId,
-                        reactions: {
-                            thumbsUp: 0,
-                            wow: 0,
-                            heart: 0,
-                            rocket: 0,
-                            coffee: 0
-                        }
-                    }
-                }
-            }
-            // If you need to customize the creation of the payload value of an action creator by means of a prepare callback, 
-            // the value of the appropriate field of the reducers argument object should be an object instead of a function.
-        },
         reactionAdded(state, action) {
             const { postId, reaction } = action.payload
             const existingPost = state.posts.find(post => post.id === postId)
             if (existingPost) {
                 existingPost.reactions[reaction]++
             }
+        },
+        incrementCount(state, action) {
+            state.count = state.count + 1
         }
     },
     extraReducers(builder) {
@@ -160,9 +139,15 @@ const postSlice = createSlice({
 export const selectAllPosts = (state) => state.posts.posts
 export const getPostsStatus = (state) => state.posts.status
 export const getPostsError = (state) => state.posts.error
+export const getCount = (state) => state.posts.count
 
 export const selectPostById = (state, postId) => state.posts.posts.find(post => post.id === postId)
 
-export const { postAdded, reactionAdded } = postSlice.actions  // Action creators for the types of actions that are handled by the slice reducer.
+export const selectPostsByUser = createSelector(
+    [selectAllPosts, (state, userId) => userId],
+    (posts, userId) => posts.filter(post => post.userId === userId)
+)
+
+export const { incrementCount, reactionAdded } = postSlice.actions  // Action creators for the types of actions that are handled by the slice reducer.
 
 export default postSlice.reducer    // The slice's reducer.
